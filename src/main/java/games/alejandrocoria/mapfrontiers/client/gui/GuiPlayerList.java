@@ -17,8 +17,11 @@ import journeymap.client.api.IClientAPI;
 import journeymap.client.data.WorldData;
 import journeymap.client.model.EntityDTO;
 import journeymap.client.model.EntityHelper;
+import journeymap.client.model.MapType;
 import journeymap.client.ui.UIManager;
+import journeymap.client.waypoint.Waypoint;
 import journeymap.client.waypoint.WaypointStore;
+import journeymap.common.nbt.RegionDataStorageHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -34,6 +37,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -52,6 +56,7 @@ public class GuiPlayerList extends Screen implements GuiScrollBox.ScrollBoxRespo
     private GuiScrollBox filterDimension;
     private GuiSettingsButton buttonResetFilters;
     private GuiSettingsButton buttonViewInMap;
+    private GuiSettingsButton buttonCreateTempWaypointForPlayer;
     private GuiSettingsButton buttonRefresh;
     private GuiSettingsButton buttonDone;
 
@@ -112,8 +117,13 @@ public class GuiPlayerList extends Screen implements GuiScrollBox.ScrollBoxRespo
         buttonResetFilters = new GuiSettingsButton(font, actualWidth / 2 + 170, 50, 110,
                 Component.translatable("mapfrontiers.reset_filters"), this::buttonPressed);
 
-        buttonViewInMap = new GuiSettingsButton(font, actualWidth / 2 - 175, actualHeight - 28, 110,
+        // Bottom buttons
+
+        buttonViewInMap = new GuiSettingsButton(font, actualWidth / 2 - 295, actualHeight - 28, 110,
                 Component.translatable("mapplayerlist.view_in_map"), this::buttonPressed);
+
+        buttonCreateTempWaypointForPlayer = new GuiSettingsButton(font, actualWidth / 2 - 175, actualHeight - 28, 110,
+                Component.translatable("mapplayerlist.create_temp_waypoint"), this::buttonPressed);
 
         buttonRefresh = new GuiSettingsButton(font, actualWidth / 2 - 55, actualHeight - 28, 110,
                 Component.translatable("mapplayerlist.refresh"), this::buttonPressed);
@@ -134,6 +144,7 @@ public class GuiPlayerList extends Screen implements GuiScrollBox.ScrollBoxRespo
         addRenderableWidget(filterDimension);
         addRenderableWidget(buttonResetFilters);
         addRenderableWidget(buttonViewInMap);
+        addRenderableWidget(buttonCreateTempWaypointForPlayer);
         addRenderableWidget(buttonRefresh);
         addRenderableWidget(buttonDone);
 
@@ -206,7 +217,18 @@ public class GuiPlayerList extends Screen implements GuiScrollBox.ScrollBoxRespo
             var position = player.getPosition();
             ForgeHooksClient.popGuiLayer(minecraft);
             UIManager.INSTANCE.openFullscreenMap().centerOn(position.x, position.z);
-        } else if (button == buttonRefresh) {
+        } else if (button == buttonCreateTempWaypointForPlayer) {
+            // make temp waypoint where player is
+            EntityDTO player = ((GuiPlayerListElement) frontiers.getSelectedElement()).getPlayer();
+            var playerPosition = player.getPosition();
+            BlockPos blockPosition = new BlockPos((int)playerPosition.x, (int)playerPosition.y, (int)playerPosition.z);
+            Waypoint waypoint = Waypoint.at(blockPosition, Waypoint.Type.Normal, player.getDimension().location().toString());
+            waypoint.setOrigin("temp");
+            waypoint.setName(MessageFormat.format("{0} last location", player.getPlayerName()));
+            waypoint.updateId();
+            WaypointStore.INSTANCE.save(waypoint, true);
+        }
+        else if (button == buttonRefresh) {
             updateFrontiers();
             updateButtons();
         }
@@ -300,6 +322,7 @@ public class GuiPlayerList extends Screen implements GuiScrollBox.ScrollBoxRespo
 
     private void updateButtons() {
         buttonViewInMap.visible = frontiers.getSelectedElement() != null;
+        buttonCreateTempWaypointForPlayer.visible = frontiers.getSelectedElement() != null;
 
 //        SettingsProfile profile = ClientProxy.getSettingsProfile();
 //        SettingsUser playerUser = new SettingsUser(Minecraft.getInstance().player);
