@@ -5,14 +5,14 @@ license="MIT"
 [[mods]]
 modId="mapfrontiers"
 version="${version}"
-displayName="MapFrontiers"
-updateJSONURL="https://alejandrocoria.games/projects/MapFrontiers/update.json"
-displayURL="https://alejandrocoria.games/projects/MapFrontiers/"
+displayName="MapPlayerList"
+#updateJSONURL="https://alejandrocoria.games/projects/MapFrontiers/update.json"
+displayURL="https://github.com/au5ton/MapPlayerList"
 logoFile="logo.png"
-credits="By Alejandro Coria. Many thanks to the JourneyMap team."
-authors="Alejandro Coria (MemeSapiens)"
+credits="Adapted from MapFrontiers by Alejandro Coria."
+authors="Austin Jackson (au5ton), Alejandro Coria (MemeSapiens)"
 description='''
-This mod is an addon for Journey Map that allows you to divide the map into regions and assign them names and colors.
+This mod is an addon for Journey Map that allows you to view the list of players logged into the server and jump to their position on the map.
 '''
 
 [[dependencies.mapfrontiers]]

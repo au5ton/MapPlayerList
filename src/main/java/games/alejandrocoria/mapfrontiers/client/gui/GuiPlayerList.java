@@ -52,6 +52,7 @@ public class GuiPlayerList extends Screen implements GuiScrollBox.ScrollBoxRespo
     private GuiScrollBox filterDimension;
     private GuiSettingsButton buttonResetFilters;
     private GuiSettingsButton buttonViewInMap;
+    private GuiSettingsButton buttonRefresh;
     private GuiSettingsButton buttonDone;
 
     public GuiPlayerList(IClientAPI jmAPI, GuiFullscreenMap fullscreenMap) {
@@ -114,6 +115,9 @@ public class GuiPlayerList extends Screen implements GuiScrollBox.ScrollBoxRespo
         buttonViewInMap = new GuiSettingsButton(font, actualWidth / 2 - 175, actualHeight - 28, 110,
                 Component.translatable("mapplayerlist.view_in_map"), this::buttonPressed);
 
+        buttonRefresh = new GuiSettingsButton(font, actualWidth / 2 - 55, actualHeight - 28, 110,
+                Component.translatable("mapplayerlist.refresh"), this::buttonPressed);
+
 //        buttonCreate = new GuiSettingsButton(font, actualWidth / 2 - 295, actualHeight - 28, 110,
 //                Component.translatable("mapfrontiers.create"), this::buttonPressed);
 //        buttonInfo = new GuiSettingsButton(font, actualWidth / 2 - 175, actualHeight - 28, 110,
@@ -123,19 +127,14 @@ public class GuiPlayerList extends Screen implements GuiScrollBox.ScrollBoxRespo
 //        buttonDelete.setTextColors(GuiColors.SETTINGS_BUTTON_TEXT_DELETE, GuiColors.SETTINGS_BUTTON_TEXT_DELETE_HIGHLIGHT);
 //        buttonVisible = new GuiSettingsButton(font, actualWidth / 2 + 65, actualHeight - 28, 110,
 //                Component.translatable("mapfrontiers.hide"), this::buttonPressed);
-        buttonDone = new GuiSettingsButton(font, actualWidth / 2 + 185, actualHeight - 28, 110,
+        buttonDone = new GuiSettingsButton(font, actualWidth / 2 + 65, actualHeight - 28, 110,
                 Component.translatable("gui.done"), this::buttonPressed);
 
         addRenderableWidget(frontiers);
-        //addRenderableWidget(filterType);
-        //addRenderableWidget(filterOwner);
         addRenderableWidget(filterDimension);
         addRenderableWidget(buttonResetFilters);
         addRenderableWidget(buttonViewInMap);
-//        addRenderableWidget(buttonCreate);
-//        addRenderableWidget(buttonInfo);
-//        addRenderableWidget(buttonDelete);
-//        addRenderableWidget(buttonVisible);
+        addRenderableWidget(buttonRefresh);
         addRenderableWidget(buttonDone);
 
         updateFrontiers();
@@ -207,7 +206,11 @@ public class GuiPlayerList extends Screen implements GuiScrollBox.ScrollBoxRespo
             var position = player.getPosition();
             ForgeHooksClient.popGuiLayer(minecraft);
             UIManager.INSTANCE.openFullscreenMap().centerOn(position.x, position.z);
-        } else if (button == buttonDone) {
+        } else if (button == buttonRefresh) {
+            updateFrontiers();
+            updateButtons();
+        }
+        else if (button == buttonDone) {
             ForgeHooksClient.popGuiLayer(minecraft);
         }
     }
@@ -268,7 +271,10 @@ public class GuiPlayerList extends Screen implements GuiScrollBox.ScrollBoxRespo
 
         frontiers.removeAll();
 
-        for (EntityDTO player : EntityHelper.getPlayersNearby()) {
+        List<EntityDTO> nearbyPlayers = EntityHelper.getPlayersNearby();
+        nearbyPlayers.sort((a,b) -> a.getPlayerName().toLowerCase().compareTo(b.getPlayerName().toLowerCase()));
+
+        for (EntityDTO player : nearbyPlayers) {
             if (checkFilterDimension(player)) {
                 frontiers.addElement(new GuiPlayerListElement(font, renderables, player));
             }

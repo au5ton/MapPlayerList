@@ -8,6 +8,7 @@ import journeymap.client.model.EntityDTO;
 import journeymap.client.render.draw.DrawUtil;
 import journeymap.client.ui.minimap.EntityDisplay;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.resources.language.I18n;
@@ -25,6 +26,7 @@ public class GuiPlayerListElement extends GuiScrollBox.ScrollElement {
     private final EntityDTO player;
     String username;
     String approxLocation;
+    String approxDistance;
     String dimension;
 
 
@@ -47,6 +49,17 @@ public class GuiPlayerListElement extends GuiScrollBox.ScrollElement {
         username = player.getPlayerName();
         var exactLocation = player.getPosition();
         approxLocation = MessageFormat.format("X: {0}, Z: {1}", (int)Math.round(exactLocation.x), (int)Math.round(exactLocation.z));
+        var currentPlayer = Minecraft.getInstance().player;
+        // If current player and other player are in the same dimension
+        if (currentPlayer.level.dimension().location().toString().equals(player.dimension.location().toString())) {
+            double exactDistance = Math.abs(currentPlayer.position().distanceTo(player.getPosition()));
+            approxDistance = MessageFormat.format("~{0} block(s) away", (int)Math.round(exactDistance));
+        }
+        else {
+            approxDistance = "";
+        }
+
+
         dimension = I18n.get("mapfrontiers.dimension", player.getDimension().location().toString());
 
 
@@ -109,6 +122,7 @@ public class GuiPlayerListElement extends GuiScrollBox.ScrollElement {
 
         // Draw player's username
         font.draw(matrixStack, username, x + 26, y + 4, color);
+        font.draw(matrixStack, approxDistance, x + 26, y + 14, GuiColors.SETTINGS_TEXT_DIMENSION);
 
 //        if (frontier.getVisible()) {
 //            font.draw(matrixStack, name1, x + 26, y + 4, color);

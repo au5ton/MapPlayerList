@@ -51,12 +51,7 @@ public class GuiFullscreenMap {
     private FrontierOverlay frontierHighlighted;
 
     private IThemeButton buttonPlayerList;
-    private IThemeButton buttonFrontiers;
-    private IThemeButton buttonNew;
     private IThemeButton buttonInfo;
-    private IThemeButton buttonEdit;
-    private IThemeButton buttonVisible;
-    private IThemeButton buttonDelete;
 
     private boolean editing = false;
     private ChunkDrawing drawingChunk = ChunkDrawing.Nothing;
@@ -76,14 +71,14 @@ public class GuiFullscreenMap {
 
     public void addButtons(ThemeButtonDisplay buttonDisplay) {
         buttonPlayerList = buttonDisplay.addThemeButton(I18n.get("mapplayerlist.title_players"), "open_player_list", b -> buttonPlayerListPressed());
-        buttonFrontiers = buttonDisplay.addThemeButton(I18n.get("mapfrontiers.button_frontiers"), "frontiers", b -> buttonFrontiersPressed());
-        buttonNew = buttonDisplay.addThemeButton(I18n.get("mapfrontiers.button_new_frontier"), "new_frontier", b -> buttonNewPressed());
-        buttonInfo = buttonDisplay.addThemeButton(I18n.get("mapfrontiers.button_frontier_info"), "info_frontier", b -> buttonInfoPressed());
-        buttonEdit = buttonDisplay.addThemeToggleButton(I18n.get("mapfrontiers.button_done_editing"), I18n.get("mapfrontiers.button_edit_frontier"),
-                "edit_frontier", editing, b -> buttonEditToggled());
-        buttonVisible = buttonDisplay.addThemeToggleButton(I18n.get("mapfrontiers.button_hide_frontier"), I18n.get("mapfrontiers.button_show_frontier"),
-                "visible_frontier", false, b -> buttonVisibleToggled());
-        buttonDelete = buttonDisplay.addThemeButton(I18n.get("mapfrontiers.button_delete_frontier"), "delete_frontier", b -> buttonDelete());
+//        buttonFrontiers = buttonDisplay.addThemeButton(I18n.get("mapfrontiers.button_frontiers"), "frontiers", b -> buttonFrontiersPressed());
+//        buttonNew = buttonDisplay.addThemeButton(I18n.get("mapfrontiers.button_new_frontier"), "new_frontier", b -> buttonNewPressed());
+//        buttonInfo = buttonDisplay.addThemeButton(I18n.get("mapfrontiers.button_frontier_info"), "info_frontier", b -> buttonInfoPressed());
+//        buttonEdit = buttonDisplay.addThemeToggleButton(I18n.get("mapfrontiers.button_done_editing"), I18n.get("mapfrontiers.button_edit_frontier"),
+//                "edit_frontier", editing, b -> buttonEditToggled());
+//        buttonVisible = buttonDisplay.addThemeToggleButton(I18n.get("mapfrontiers.button_hide_frontier"), I18n.get("mapfrontiers.button_show_frontier"),
+//                "visible_frontier", false, b -> buttonVisibleToggled());
+//        buttonDelete = buttonDisplay.addThemeButton(I18n.get("mapfrontiers.button_delete_frontier"), "delete_frontier", b -> buttonDelete());
 
         updatebuttons();
     }
@@ -165,37 +160,22 @@ public class GuiFullscreenMap {
         SettingsProfile.AvailableActions actions = SettingsProfile.getAvailableActions(profile, frontierHighlighted, playerUser);
 
         buttonPlayerList.setEnabled(!editing);
-        buttonFrontiers.setEnabled(!editing);
-        buttonNew.setEnabled(!editing);
-        buttonInfo.setEnabled(frontierHighlighted != null && !editing);
-        buttonEdit.setEnabled(actions.canUpdate && frontierHighlighted.getVisible() && frontierHighlighted.getFullscreenVisible());
-        buttonVisible.setEnabled(actions.canUpdate && !editing);
-        buttonDelete.setEnabled(actions.canDelete && !editing);
-
-        if (frontierHighlighted != null) {
-            buttonVisible.setToggled(frontierHighlighted.getVisible() && frontierHighlighted.getFullscreenVisible());
-        } else {
-            buttonVisible.setToggled(false);
-        }
+//        buttonFrontiers.setEnabled(!editing);
+//        buttonNew.setEnabled(!editing);
+//        buttonInfo.setEnabled(frontierHighlighted != null && !editing);
+//        buttonEdit.setEnabled(actions.canUpdate && frontierHighlighted.getVisible() && frontierHighlighted.getFullscreenVisible());
+//        buttonVisible.setEnabled(actions.canUpdate && !editing);
+//        buttonDelete.setEnabled(actions.canDelete && !editing);
+//
+//        if (frontierHighlighted != null) {
+//            buttonVisible.setToggled(frontierHighlighted.getVisible() && frontierHighlighted.getFullscreenVisible());
+//        } else {
+//            buttonVisible.setToggled(false);
+//        }
     }
 
     private void buttonPlayerListPressed() {
         ForgeHooksClient.pushGuiLayer(Minecraft.getInstance(), new GuiPlayerList(jmAPI, this));
-    }
-
-    private void buttonFrontiersPressed() {
-        ForgeHooksClient.pushGuiLayer(Minecraft.getInstance(), new GuiFrontierList(jmAPI, this));
-    }
-
-    private void buttonNewPressed() {
-        if (frontierHighlighted != null) {
-            frontierHighlighted.setHighlighted(false);
-            frontierHighlighted = null;
-        }
-
-        ForgeHooksClient.pushGuiLayer(Minecraft.getInstance(), new GuiNewFrontier(jmAPI));
-
-        updatebuttons();
     }
 
     private void buttonInfoPressed() {
@@ -203,24 +183,14 @@ public class GuiFullscreenMap {
     }
 
     private void buttonEditToggled() {
-        buttonEdit.toggle();
-        boolean toggled = buttonEdit.getToggled();
-        if (toggled) {
-            editing = true;
-            drawingChunk = ChunkDrawing.Nothing;
-        } else {
-            stopEditing();
-        }
-
-        updatebuttons();
-    }
-
-    private void buttonVisibleToggled() {
-        frontierHighlighted.setVisible(!buttonVisible.getToggled());
-
-        boolean personalFrontier = frontierHighlighted.getPersonal();
-        FrontiersOverlayManager frontierManager = ClientProxy.getFrontiersOverlayManager(personalFrontier);
-        frontierManager.clientUpdatefrontier(frontierHighlighted);
+//        buttonEdit.toggle();
+//        boolean toggled = buttonEdit.getToggled();
+//        if (toggled) {
+//            editing = true;
+//            drawingChunk = ChunkDrawing.Nothing;
+//        } else {
+//            stopEditing();
+//        }
 
         updatebuttons();
     }
