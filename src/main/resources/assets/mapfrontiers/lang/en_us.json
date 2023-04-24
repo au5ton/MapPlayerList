@@ -44,6 +44,7 @@
   "mapfrontiers.create": "Create",
   "mapfrontiers.edit": "Edit",
   "mapfrontiers.info": "Info",
+  "mapplayerlist.view_in_map": "Open",
   "mapfrontiers.show": "Show",
   "mapfrontiers.hide": "Hide",
 
@@ -63,6 +64,7 @@
   "mapfrontiers.title_new_frontier": "New Frontier",
   "mapfrontiers.title_share_settings": "Share Settings",
   "mapfrontiers.title_settings": "MapFrontier Settings",
+  "mapplayerlist.title_players": "Online Players",
 
   "mapfrontiers.credits": "Credits",
   "mapfrontiers.general": "General",

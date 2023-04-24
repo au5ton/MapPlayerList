@@ -16,6 +16,8 @@ import journeymap.client.api.display.Context;
 import journeymap.client.api.display.IThemeButton;
 import journeymap.client.api.display.ModPopupMenu;
 import journeymap.client.api.display.ThemeButtonDisplay;
+import journeymap.client.model.EntityDTO;
+import journeymap.client.ui.UIManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
@@ -48,6 +50,7 @@ public class GuiFullscreenMap {
 
     private FrontierOverlay frontierHighlighted;
 
+    private IThemeButton buttonPlayerList;
     private IThemeButton buttonFrontiers;
     private IThemeButton buttonNew;
     private IThemeButton buttonInfo;
@@ -72,6 +75,7 @@ public class GuiFullscreenMap {
     }
 
     public void addButtons(ThemeButtonDisplay buttonDisplay) {
+        buttonPlayerList = buttonDisplay.addThemeButton(I18n.get("mapplayerlist.title_players"), "open_player_list", b -> buttonPlayerListPressed());
         buttonFrontiers = buttonDisplay.addThemeButton(I18n.get("mapfrontiers.button_frontiers"), "frontiers", b -> buttonFrontiersPressed());
         buttonNew = buttonDisplay.addThemeButton(I18n.get("mapfrontiers.button_new_frontier"), "new_frontier", b -> buttonNewPressed());
         buttonInfo = buttonDisplay.addThemeButton(I18n.get("mapfrontiers.button_frontier_info"), "info_frontier", b -> buttonInfoPressed());
@@ -160,6 +164,7 @@ public class GuiFullscreenMap {
         SettingsUser playerUser = new SettingsUser(Minecraft.getInstance().player);
         SettingsProfile.AvailableActions actions = SettingsProfile.getAvailableActions(profile, frontierHighlighted, playerUser);
 
+        buttonPlayerList.setEnabled(!editing);
         buttonFrontiers.setEnabled(!editing);
         buttonNew.setEnabled(!editing);
         buttonInfo.setEnabled(frontierHighlighted != null && !editing);
@@ -172,6 +177,10 @@ public class GuiFullscreenMap {
         } else {
             buttonVisible.setToggled(false);
         }
+    }
+
+    private void buttonPlayerListPressed() {
+        ForgeHooksClient.pushGuiLayer(Minecraft.getInstance(), new GuiPlayerList(jmAPI, this));
     }
 
     private void buttonFrontiersPressed() {
@@ -266,6 +275,14 @@ public class GuiFullscreenMap {
         } else if (frontierHighlighted != null) {
             frontierHighlighted.setHighlighted(false);
             frontierHighlighted = null;
+        }
+
+        updatebuttons();
+    }
+
+    public void selectPlayer(@Nullable EntityDTO player) {
+        if (player != null && player.getDimension().equals(jmAPI.getUIState(Context.UI.Fullscreen).dimension)) {
+            // TODO: are we supposed to do something here?
         }
 
         updatebuttons();
